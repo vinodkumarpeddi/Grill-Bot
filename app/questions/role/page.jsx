@@ -1,4 +1,4 @@
-"use client";
+import { Suspense } from "react";  // Import Suspense
 import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -88,5 +88,10 @@ const RoleQuestionsPage = () => {
     );
 };
 
-export default RoleQuestionsPage;
- 
+const RoleQuestionsPageWithSuspense = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+        <RoleQuestionsPage />
+    </Suspense>
+);
+
+export default RoleQuestionsPageWithSuspense;
