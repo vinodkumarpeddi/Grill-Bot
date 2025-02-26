@@ -28,7 +28,7 @@ const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, intervi
         startSpeechToText,
         stopSpeechToText,
     } = useSpeechToText({
-        continuous: false, // Set to false to avoid duplicate words
+        continuous: true, // Set to false to avoid duplicate words
         useLegacyResults: false,
     });
 
