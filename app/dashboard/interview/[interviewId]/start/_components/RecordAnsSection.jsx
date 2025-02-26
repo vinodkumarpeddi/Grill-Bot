@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Webcam from "react-webcam";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import useSpeechToText from "react-hook-speech-to-text";
-import { Mic, StopCircle, LoaderCircle } from "lucide-react";
+import { Mic, StopCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { db } from "@/utils/db";
 import { UserAnswer } from "@/utils/schema";
@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, interviewData }) => {
     const [userAnswer, setUserAnswer] = useState("");
     const [loading, setLoading] = useState(false);
+    const prevResults = useRef(""); // Store previous results to prevent duplicates
     const { user } = useUser();
 
     const {
@@ -27,12 +28,19 @@ const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, intervi
         startSpeechToText,
         stopSpeechToText,
     } = useSpeechToText({
-        continuous: true,
+        continuous: false, // Set to false to avoid duplicate words
         useLegacyResults: false,
     });
 
+    // Update the userAnswer without duplicating results
     useEffect(() => {
-        setUserAnswer(results.map((res) => res.transcript).join(" "));
+        if (results.length > 0) {
+            const newAnswer = results.map((res) => res.transcript).join(" ");
+            if (newAnswer !== prevResults.current) { // Only update if it's different
+                setUserAnswer(newAnswer);
+                prevResults.current = newAnswer; // Store latest answer to avoid duplicates
+            }
+        }
     }, [results]);
 
     useEffect(() => {
@@ -49,6 +57,9 @@ const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, intervi
         if (isRecording) {
             stopSpeechToText();
         } else {
+            setResults([]);  // Clear previous results before recording
+            setUserAnswer(""); // Clear user answer
+            prevResults.current = ""; // Reset previous results reference
             startSpeechToText();
         }
     };
@@ -61,7 +72,7 @@ const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, intervi
 
         setLoading(true);
 
-        const feedbackPrompt = `Question: ${mockInterviewQuestions[activeQuestionIndex]?.question}\nUser Answer: ${userAnswer}\nPlease provide a rating out of 10 and constructive feedback (2-3 lines) in JSON format with \"rating\" and \"feedback\" fields.`;
+        const feedbackPrompt = `Question: ${mockInterviewQuestions[activeQuestionIndex]?.question}\nUser Answer: ${userAnswer}\nPlease provide a rating out of 10 and constructive feedback (2-3 lines) in JSON format with "rating" and "feedback" fields.`;
 
         try {
             const result = await chatSession.sendMessage(feedbackPrompt);
@@ -95,6 +106,7 @@ const RecordAnsSection = ({ mockInterviewQuestions, activeQuestionIndex, intervi
                 toast.success("User Answer Recorded Successfully");
                 setUserAnswer("");
                 setResults([]);
+                prevResults.current = ""; // Reset previous results after submission
             }
             setLoading(false);
         } catch (error) {

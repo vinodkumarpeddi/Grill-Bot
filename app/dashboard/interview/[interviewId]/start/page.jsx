@@ -9,7 +9,7 @@ import RecordAnsSection from './_components/RecordAnsSection';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { RingLoader } from 'react-spinners';
-import { motion } from "framer-motion";  // 📌 Import Framer Motion for animations
+import { motion } from "framer-motion";  // Framer Motion for animations
 
 const Start = () => {
   const [interviewData, setInterviewData] = useState(null);
@@ -66,7 +66,7 @@ const Start = () => {
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 0.5 }} 
-      className="px-6 sm:px-8 lg:px-10 py-8 min-h-screen"
+      className="px-4 sm:px-6 lg:px-10 py-6 sm:py-8 min-h-screen"
     >
       {loading ? (
         <div className="flex justify-center items-center mt-20 h-64">
@@ -76,11 +76,12 @@ const Start = () => {
         <>
           {mockInterviewQuestions.length > 0 ? (
             <>
+              {/* 🔹 Responsive Grid for Question & Answer Sections */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }} 
                 animate={{ opacity: 1, scale: 1 }} 
                 transition={{ duration: 0.5, delay: 0.2 }} 
-                className="grid grid-cols-1 md:grid-cols-2 gap-10"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10"
               >
                 <QuestionsSection
                   mockInterviewQuestions={mockInterviewQuestions}
@@ -93,12 +94,14 @@ const Start = () => {
                 />
               </motion.div>
 
+              {/* 🔹 Navigation Buttons */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ duration: 0.5, delay: 0.4 }} 
-                className="flex flex-col sm:flex-row justify-end items-center gap-4 mt-8"
+                className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-4 mt-6"
               >
+                {/* Previous Button */}
                 <Button
                   className="w-full sm:w-auto transition-transform duration-300 hover:scale-105"
                   onClick={() => setActiveQuestionIndex(Math.max(0, activeQuestionIndex - 1))}
@@ -107,6 +110,7 @@ const Start = () => {
                   Previous
                 </Button>
 
+                {/* Next Button */}
                 {activeQuestionIndex < mockInterviewQuestions.length - 1 && (
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white transition-transform duration-300 hover:scale-105 hover:shadow-lg"
@@ -116,8 +120,9 @@ const Start = () => {
                   </Button>
                 )}
 
+                {/* End Interview Button */}
                 {activeQuestionIndex === mockInterviewQuestions.length - 1 && (
-                  <Link href={`/dashboard/interview/${interviewData?.mockId}/feedback`}>
+                  <Link href={`/dashboard/interview/${interviewData?.mockId}/feedback`} className="w-full sm:w-auto">
                     <Button className="w-full sm:w-auto bg-red-600 text-white transition-transform duration-300 hover:scale-105 hover:bg-red-700">
                       End the Interview
                     </Button>
@@ -130,7 +135,7 @@ const Start = () => {
               initial={{ opacity: 0, scale: 0.8 }} 
               animate={{ opacity: 1, scale: 1 }} 
               transition={{ duration: 0.5 }} 
-              className="text-center text-gray-500 text-lg"
+              className="text-center text-gray-500 text-lg px-4 sm:px-0"
             >
               No questions available for this interview.
             </motion.div>
